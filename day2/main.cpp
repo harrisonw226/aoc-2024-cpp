@@ -18,6 +18,47 @@ int increasing(int value1, int value2)
 	return (value2 - value1) / mag(value2 - value1);
 }
 
+void printVec(std::vector<int> vec) {
+	std::cout << "vec: ";
+	for (int i : vec){
+		std::cout << i << " ";
+	}
+	std::cout << std::endl;
+}
+
+int checkFailure(std::vector<int> levels)
+{
+	int level;
+	int increasing_flag = increasing(levels[0], levels[1]);
+	int prev = levels[0];
+	int failed = 0;
+	printVec(levels);
+	for (int i = 1; i < levels.size(); i++) {
+		level = levels[i];
+		if (increasing(prev, level) == 0) {
+			std::cout << "equal: ";
+			failed = i;
+			break;
+		}
+
+		if (increasing(prev, level) != increasing_flag) {
+			std::cout << "increasing: ";
+			failed = -i;
+			break;
+		}
+
+		if (mag(level - prev) > 3) {
+			std::cout << "mag: ";
+			failed = i;
+			break;
+		}
+
+		prev = level;
+	}
+	std::cout << "failed at " << failed << std::endl;
+	return failed;
+}
+
 using namespace std;
 int main(int argc, char *argv[])
 {
@@ -45,30 +86,19 @@ int main(int argc, char *argv[])
 		level = stoi(line.substr(prev, temp));
 		levels.push_back(level);
 
-		increasing_flag = increasing(levels[0], levels[1]);
-		prev = levels[0];
-		int failed = 0;
-		for (int i = 1; i < levels.size(); i++) {
-			level = levels[i];
-			if (increasing(prev, level) == 0) {
-				failed = 1;
-				continue;
+		int failed = checkFailure(levels);
+		if (failed) {
+			for (int i = 0; i < levels.size(); i++) {
+				vector<int> tmp_v = levels;
+				tmp_v.erase(tmp_v.begin() + i);
+				failed = checkFailure(tmp_v);
+				if (!failed) {
+					break;
+				}
 			}
-
-			if (increasing(prev, level) != increasing_flag) {
-				failed = 1;
-				continue;
-			}
-
-			if (mag(level - prev) > 3) {
-				failed = 1;
-				continue;
-			}
-
-			prev = level;
 		}
 		if (!failed)
 			count += 1;
 	}
-	cout << count << endl;
+	cout << "count: " << count << endl;
 }
