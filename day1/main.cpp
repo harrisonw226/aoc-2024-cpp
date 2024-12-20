@@ -22,10 +22,7 @@ int main(int argc, char *argv[])
 
 	for (int i = 0; i < vec_1.size(); i++) {
 		first_half = vec_1[i];
-		second_half = vec_2[i];
-		int temp = (first_half < second_half) ?
-				   second_half - first_half :
-				   first_half - second_half;
+		int temp = first_half * count(vec_2.begin(), vec_2.end(), first_half);
 		mag += temp;
 	}
 	cout << mag << endl;
