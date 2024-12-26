@@ -4,32 +4,37 @@
 #include <vector>
 using namespace std;
 
-int checkDir(vector<vector<char> > mainMatrix, pair<int, int> coord, int vert,
-	     int horz)
+int checkDir(vector<vector<char> > mainMatrix, pair<int, int> coord)
 {
 	int max_size_v = mainMatrix.size();
 	int max_size_h = mainMatrix[0].size();
-	if ((coord.first + 3 * vert < 0) ||
-	    (coord.first + 3 * vert >= max_size_v) ||
-	    (coord.second + 3 * horz < 0) ||
-	    (coord.second + 3 * horz >= max_size_h)) {
+	if ((coord.first - 1 < 0) || (coord.first + 1 >= max_size_v) ||
+	    (coord.second - 1 < 0) || (coord.second + 1 >= max_size_h)) {
 		return 0;
 	}
-	if (mainMatrix[coord.first][coord.second] == 'X') {
-		if (mainMatrix[coord.first + vert][coord.second + horz] ==
-		    'M') {
-			if (mainMatrix[coord.first + 2 * vert]
-				      [coord.second + 2 * horz] == 'A') {
-				if (mainMatrix[coord.first + 3 * vert]
-					      [coord.second + 3 * horz] ==
-				    'S') {
-					return 1;
-				}
-			}
+
+	int check_1 = 0, check_2 = 0;
+	if (mainMatrix[coord.first][coord.second] == 'A') {
+		if ((mainMatrix[coord.first - 1][coord.second - 1] == 'M') &&
+		    (mainMatrix[coord.first + 1][coord.second + 1] == 'S')) {
+			check_1 |= 1;
+		}
+		else if ((mainMatrix[coord.first + 1][coord.second + 1] == 'M') &&
+		    (mainMatrix[coord.first - 1][coord.second - 1] == 'S')) {
+			check_1 |= 1;
+		}
+
+		if ((mainMatrix[coord.first + 1][coord.second - 1] == 'M') &&
+		    (mainMatrix[coord.first - 1][coord.second + 1] == 'S')) {
+			check_2 |= 1;
+		}
+		else if ((mainMatrix[coord.first - 1][coord.second + 1] == 'M') &&
+		    (mainMatrix[coord.first + 1][coord.second - 1] == 'S')) {
+			check_2 |= 1;
 		}
 	}
 
-	return 0;
+	return (check_1 && check_2);
 }
 
 int main(int argc, char *argv[])
@@ -57,14 +62,7 @@ int main(int argc, char *argv[])
 			coord.first = vert_coord;
 			coord.second = horz_coord;
 			int xmas = 0;
-			xmas += checkDir(mainMatrix, coord, 0, 1);
-			xmas += checkDir(mainMatrix, coord, 0, -1);
-			xmas += checkDir(mainMatrix, coord, 1, 0);
-			xmas += checkDir(mainMatrix, coord, -1, 0);
-			xmas += checkDir(mainMatrix, coord, 1, 1);
-			xmas += checkDir(mainMatrix, coord, 1, -1);
-			xmas += checkDir(mainMatrix, coord, -1, 1);
-			xmas += checkDir(mainMatrix, coord, -1, -1);
+			xmas += checkDir(mainMatrix, coord);
 			//cout << xmas;
 			count += xmas;
 		}
