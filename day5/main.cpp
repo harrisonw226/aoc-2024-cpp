@@ -70,13 +70,45 @@ int checkValidList(vector<int> page_list)
 		int current_page = page_list[current_page_idx];
 		vector<int> pages_before(page_list.begin(),
 					 page_list.begin() + current_page_idx);
-		cout << "index: " << current_page_idx
-		     << " valid: " << checkValidPage(current_page, pages_before)
-		     << endl;
 		if (!checkValidPage(current_page, pages_before))
 			return 0;
 	}
 	return 1;
+}
+
+int countOccurs(vector<int> page_list, int cur_page)
+{
+	int count = 0;
+	vector<int> pages;
+	for (int page : page_list) {
+		map<int, vector<int> >::iterator search;
+		if (search = page_order_map.find(page);
+		    search != page_order_map.end()) {
+			pages = search->second;
+			count += std::count(pages.begin(), pages.end(),
+					    cur_page);
+		}
+	}
+	return count;
+}
+
+vector<int> validateList(vector<int> page_list)
+{
+	vector<pair<int, int> > page_pairs;
+	for (int page : page_list) {
+		int count = countOccurs(page_list, page);
+		cout << "page: " << page << " count: " << count << endl;
+		page_pairs.push_back(make_pair(count, page));
+	}
+	std::sort(page_pairs.begin(), page_pairs.end(),
+		  [](auto &left, auto &right) {
+			  return left.first < right.first;
+		  });
+vector<int> sorted_pages;
+	for (auto pair : page_pairs){
+		sorted_pages.push_back(pair.second);
+	}
+	return sorted_pages;
 }
 
 int main(int argc, char *argv[])
@@ -101,12 +133,11 @@ int main(int argc, char *argv[])
 			addToMap(before_pg, after_pg);
 			break;
 		case 1:
-			vector pages = populatePageList(line);
-			cout << "vector: ";
-			printVector(pages);
+			vector<int> pages = populatePageList(line);
 			int valid = checkValidList(pages);
-			if (valid){
-				sum += pages[pages.size()/2];
+			if (!valid) {
+				vector<int> sorted_pages = validateList(pages);
+				sum += sorted_pages[sorted_pages.size() / 2];
 			}
 			break;
 		}
